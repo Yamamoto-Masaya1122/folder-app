@@ -1,3 +1,4 @@
+# php
 FROM php:8.4-apache
 
 # ドキュメントルートを変更する
@@ -30,3 +31,8 @@ RUN chown -R www-data:www-data /var/www/html/storage \
 WORKDIR /var/www/html
 
 COPY ./infra/docker/php/php.ini /usr/local/etc/php/php.ini
+
+# Node.js（最新系）を追加
+RUN curl -fsSL https://deb.nodesource.com/setup_current.x | bash - \
+    && apt-get install -y nodejs \
+    && node -v && npm -v
