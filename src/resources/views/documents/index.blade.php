@@ -29,6 +29,11 @@
           </tr>
         </thead>
         <tbody>
+          @if ($documents->isEmpty())
+            <tr>
+              <td colspan="3" class="text-center">書類がありません</td>
+            </tr>
+          @endif
           @foreach ($documents as $document)
             <tr>
               <td class="flex items-center gap-2">
