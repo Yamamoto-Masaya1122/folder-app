@@ -15,7 +15,7 @@
 | 論理名        | 物理名     | データ型   | サイズ | PK  | NULL | DEFAULT | UNIQUE | FK  | AUTO_INCREMENT |
 | ------------- | ---------- | ---------- | ------ | --- | ---- | ------- | ------ | --- | -------------- |
 | フォルダID    | id         | BIGINTEGER | -      | ○   | ×    | -       | ○      | ×   | ○              |
-| 親フォルダID  | parent_id  | BIGINTEGER | -      | ×   | ○    | NULL    | ×      | x   | x              |
+| 親フォルダID  | parent_folder_id  | BIGINTEGER | -      | ×   | ○    | NULL    | ×      | x   | x              |
 | フォルダ名    | name       | VARCHAR    | 255    | ×   | ×    | -       | ×      | ×   | x              |
 | 作成日時      | created_at | TIMESTAMP  | -      | ×   | ×    | NOW()   | ×      | ×   | x              |
 | 更新日時      | updated_at | TIMESTAMP  | -      | ×   | ×    | NOW()   | ×      | ×   | x              |

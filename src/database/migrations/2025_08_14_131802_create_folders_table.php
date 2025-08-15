@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('folders', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('parent_id')->nullable()->comment('親フォルダID');
+            $table->bigInteger('parent_folder_id')->nullable()->comment('親フォルダID');
             $table->string('name')->comment('フォルダ名');
             $table->timestamps();
         });
