@@ -3,64 +3,67 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreFolderRequest;
-use App\Http\Requests\UpdateFolderRequest;
 use App\Models\Folder;
+use App\Models\Document;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class FolderController extends Controller
 {
+    private $document;
+    private $folder;
+
+    public function __construct(Folder $folder, Document $document)
+    {
+        $this->folder = $folder;
+        $this->document = $document;
+    }
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        $parent_folder_id = $request->parent_folder_id;
+        $folders = $this->folder->where('parent_folder_id', $parent_folder_id)->get();
+        $documents = $this->document->where('folder_id', $parent_folder_id)->get();
+
+        $folders->transform(function ($folder) {
+            $folder->type = 'folder';
+            return $folder;
+        });
+
+        $documents->transform(function ($document) {
+            $document->type = 'document';
+            return $document;
+        });
+
+        $items = $folders->concat($documents);
+
+        return view('folders.index', compact('items', 'parent_folder_id'));
     }
 
     /**
-     * Show the form for creating a new resource.
+     * フォルダ作成画面表示
      */
-    public function create()
+    public function create(?string $parent_folder_id = null)
     {
-        //
+        Log::info(__METHOD__);
+        return view('folders.create', compact('parent_folder_id'));
     }
 
     /**
-     * Store a newly created resource in storage.
+     * フォルダ保存
      */
     public function store(StoreFolderRequest $request)
     {
-        //
-    }
+        Log::info(__METHOD__);
+        $folder = Folder::create($request->all());
+        $parent_folder_id = $folder->parent_folder_id;
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(Folder $folder)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Folder $folder)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(UpdateFolderRequest $request, Folder $folder)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Folder $folder)
-    {
-        //
+        if(is_null($parent_folder_id)) {
+            return redirect()->route('documents.index')->with('success', 'フォルダを作成しました');
+        } else {
+            return redirect()->route('folders.index', $parent_folder_id)->with('success', 'フォルダを作成しました');
+        }
     }
 }

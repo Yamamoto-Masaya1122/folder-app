@@ -11,7 +11,7 @@ class StoreFolderRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,15 @@ class StoreFolderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => 'required|string|max:255'
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'name.required' => 'フォルダ名は必須です',
+            'name.max' => 'フォルダ名は255文字以内で入力してください',
         ];
     }
 }

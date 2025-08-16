@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\FolderController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -13,3 +14,6 @@ Route::get('/documents/{id}', [DocumentController::class, 'show'])->name('docume
 Route::get('/documents/{id}/edit', [DocumentController::class, 'edit'])->name('documents.edit');
 Route::post('/documents/{id}', [DocumentController::class, 'update'])->name('documents.update');
 Route::delete('/documents/{id}', [DocumentController::class, 'destroy'])->name('documents.destroy');
+Route::get('/folders', [FolderController::class, 'index'])->name('folders.index');
+Route::get('/folders/create', [FolderController::class, 'create'])->name('folders.create');
+Route::post('/folders', [FolderController::class, 'store'])->name('folders.store');

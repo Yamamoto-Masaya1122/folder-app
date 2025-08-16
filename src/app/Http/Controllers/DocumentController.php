@@ -5,10 +5,20 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreDocumentRequest;
 use App\Http\Requests\UpdateDocumentRequest;
 use App\Models\Document;
+use App\Models\Folder;
 use Illuminate\Support\Facades\Log;
 
 class DocumentController extends Controller
 {
+    private $document;
+    private $folder;
+
+    public function __construct(Document $document, Folder $folder)
+    {
+        $this->document = $document;
+        $this->folder = $folder;
+    }
+
     /**
      * 書類一覧
      * @return \Illuminate\Contracts\View\View
@@ -16,8 +26,23 @@ class DocumentController extends Controller
     public function index()
     {
         Log::info(__METHOD__);
-        $documents = Document::all();
-        return view('documents.index', compact('documents'));
+
+        $folders = $this->folder->whereNull('parent_folder_id')->get();
+        $documents = $this->document->whereNull('folder_id')->get();
+
+        $folders->transform(function ($folder) {
+            $folder->type = 'folder';
+            return $folder;
+        });
+
+        $documents->transform(function ($document) {
+            $document->type = 'document';
+            return $document;
+        });
+
+        $items = $folders->concat($documents);
+
+        return view('documents.index', compact('items'));
     }
 
     /**
