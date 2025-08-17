@@ -13,5 +13,6 @@ class Document extends Model
     protected $fillable = [
         'title',
         'content',
+        'folder_id',
     ];
 }

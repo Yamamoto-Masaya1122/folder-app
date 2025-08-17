@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreDocumentRequest;
 use App\Http\Requests\UpdateDocumentRequest;
+use \Illuminate\Database\Eloquent\Collection;
 use App\Models\Document;
 use App\Models\Folder;
 use Illuminate\Http\Request;
@@ -27,22 +28,9 @@ class DocumentController extends Controller
     public function index()
     {
         Log::info(__METHOD__);
-
         $folders = $this->folder->whereNull('parent_folder_id')->get();
         $documents = $this->document->whereNull('folder_id')->get();
-
-        $folders->transform(function ($folder) {
-            $folder->type = 'folder';
-            return $folder;
-        });
-
-        $documents->transform(function ($document) {
-            $document->type = 'document';
-            return $document;
-        });
-
-        $items = $folders->concat($documents);
-
+        $items = $this->addType($folders, $documents);
         return view('documents.index', compact('items'));
     }
 
@@ -66,13 +54,17 @@ class DocumentController extends Controller
     {
         Log::info(__METHOD__);
         $parent_folder_id = $request->input('parent_folder_id');
-        $document = Document::create($request->all());
-        if(is_null($parent_folder_id)) {
+        $document = $this->document;
+        $document->title = $request->title;
+        $document->content = $request->content;
+        $document->folder_id = $parent_folder_id ?? null;
+        $document->save();
+
+        if (is_null($parent_folder_id)) {
             return redirect()->route('documents.index')->with('success', '書類を作成しました');
         } else {
             return redirect()->route('folders.index', ['parent_folder_id' => $parent_folder_id])->with('success', '書類を作成しました');
         }
-        return redirect()->route('documents.show', $document->id)->with('success', '書類を作成しました');
     }
 
     /**
@@ -108,6 +100,7 @@ class DocumentController extends Controller
     public function update(UpdateDocumentRequest $request, string $id)
     {
         Log::info(__METHOD__);
+
         try {
             $document = Document::find($id);
             $document->update($request->all());
@@ -125,6 +118,7 @@ class DocumentController extends Controller
     public function destroy(string $id)
     {
         Log::info(__METHOD__);
+
         try {
             $document = Document::find($id);
             $document->delete();
@@ -132,5 +126,30 @@ class DocumentController extends Controller
         } catch (\Exception $e) {
             return redirect()->route('documents.index')->with('error', '書類の削除に失敗しました');
         }
+    }
+
+    /**
+     * フォルダと書類にtypeを追加
+     * @param \Illuminate\Database\Eloquent\Collection $folders
+     * @param \Illuminate\Database\Eloquent\Collection $documents
+     * @return \Illuminate\Database\Eloquent\Collection
+     */
+    private function addType(Collection $folders, Collection $documents)
+    {
+        Log::info(__METHOD__);
+
+        $folders->transform(function ($folder) {
+            $folder->type = 'folder';
+            return $folder;
+        });
+
+        $documents->transform(function ($document) {
+            $document->type = 'document';
+            return $document;
+        });
+
+        $items = $folders->concat($documents);
+
+        return $items;
     }
 }

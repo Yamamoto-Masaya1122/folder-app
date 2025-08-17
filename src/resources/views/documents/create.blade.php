@@ -12,8 +12,9 @@
           <legend class="fieldset-legend">書類タイトル</legend>
           <input type="text" class="input w-full" name="title" value="{{ old('title') }}" placeholder="書類のタイトルを入力してください" />
           @error('title')
-            <p class="text-error mt-1">{{ $message }}</p>
+          <p class="text-error mt-1">{{ $message }}</p>
           @enderror
+          <input type="hidden" name="parent_folder_id" value="{{ $parent_folder_id ?? null }}" />
         </fieldset>
         <fieldset class="fieldset">
           <legend class="fieldset-legend">内容</legend>
