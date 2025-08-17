@@ -10,5 +10,8 @@ class Folder extends Model
     /** @use HasFactory<\Database\Factories\FolderFactory> */
     use HasFactory;
 
-    protected $fillable = ['parent_folder_id', 'name'];
+    protected $fillable = [
+        'parent_folder_id',
+        'name',
+    ];
 }

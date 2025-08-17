@@ -12,7 +12,7 @@
           <legend class="fieldset-legend">フォルダ名</legend>
           <input type="text" class="input w-full" name="name" value="{{ old('name') }}" placeholder="フォルダの名前を入力してください" />
           @error('name')
-            <p class="text-error mt-1">{{ $message }}</p>
+          <p class="text-error mt-1">{{ $message }}</p>
           @enderror
           <input type="hidden" name="parent_folder_id" value="{{ $parent_folder_id ?? null }}" />
         </fieldset>
