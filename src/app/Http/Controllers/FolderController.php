@@ -23,7 +23,7 @@ class FolderController extends Controller
      */
     public function index(Request $request)
     {
-        $parent_folder_id = $request->parent_folder_id;
+        $parent_folder_id = $request->input('parent_folder_id');
         $folders = $this->folder->where('parent_folder_id', $parent_folder_id)->get();
         $documents = $this->document->where('folder_id', $parent_folder_id)->get();
 
@@ -45,9 +45,10 @@ class FolderController extends Controller
     /**
      * フォルダ作成画面表示
      */
-    public function create(?string $parent_folder_id = null)
+    public function create(Request $request)
     {
         Log::info(__METHOD__);
+        $parent_folder_id = $request->input('parent_folder_id');
         return view('folders.create', compact('parent_folder_id'));
     }
 
@@ -60,10 +61,10 @@ class FolderController extends Controller
         $folder = Folder::create($request->all());
         $parent_folder_id = $folder->parent_folder_id;
 
-        if(is_null($parent_folder_id)) {
+        if (is_null($parent_folder_id)) {
             return redirect()->route('documents.index')->with('success', 'フォルダを作成しました');
         } else {
-            return redirect()->route('folders.index', $parent_folder_id)->with('success', 'フォルダを作成しました');
+            return redirect()->route('folders.index', ['parent_folder_id' => $parent_folder_id])->with('success', 'フォルダを作成しました');
         }
     }
 }

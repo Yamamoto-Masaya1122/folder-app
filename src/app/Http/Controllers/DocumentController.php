@@ -6,6 +6,7 @@ use App\Http\Requests\StoreDocumentRequest;
 use App\Http\Requests\UpdateDocumentRequest;
 use App\Models\Document;
 use App\Models\Folder;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class DocumentController extends Controller
@@ -49,10 +50,11 @@ class DocumentController extends Controller
      * 書類作成
      * @return \Illuminate\Contracts\View\View
      */
-    public function create()
+    public function create(Request $request)
     {
         Log::info(__METHOD__);
-        return view('documents.create');
+        $parent_folder_id = $request->input('parent_folder_id');
+        return view('documents.create', compact('parent_folder_id'));
     }
 
     /**
@@ -63,7 +65,13 @@ class DocumentController extends Controller
     public function store(StoreDocumentRequest $request)
     {
         Log::info(__METHOD__);
+        $parent_folder_id = $request->input('parent_folder_id');
         $document = Document::create($request->all());
+        if(is_null($parent_folder_id)) {
+            return redirect()->route('documents.index')->with('success', '書類を作成しました');
+        } else {
+            return redirect()->route('folders.index', ['parent_folder_id' => $parent_folder_id])->with('success', '書類を作成しました');
+        }
         return redirect()->route('documents.show', $document->id)->with('success', '書類を作成しました');
     }
 
